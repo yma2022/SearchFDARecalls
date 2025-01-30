@@ -18,11 +18,11 @@ class XMLSearchAgent:
 
     def setup_agent(self):
         """Set up the agent using LangGraph."""
-        retriever = self.vector_store.as_retriever()
+        retriever = self.vector_store.as_retriever(search_kwargs={"k": 1})
         prompt = ChatPromptTemplate.from_template(
-            "You are an assistant that searches through recall data. Please list all the relevant recalls with their brand, company, date, product description, reason, and URL in a table in markdown based on the context.\n\nContext:\n{context}\n\nQuestion:\n{question}"
-        )
-
+            "You are an assistant that searches through recall data. Please compare the keywords in the question to the reason of the recall andlist all the relevant recalls with their brand, company, date, product description, reason, and URL in a table in markdown based on the context.\n\nContext:\n{context}\n\nQuestion:\n{question}"
+        ) 
+        
         self.chain = (
             {"context": retriever, "question": RunnablePassthrough()}
             | prompt

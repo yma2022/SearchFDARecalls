@@ -31,7 +31,7 @@ def parse_xml_files(data_path):
                 "reason": reason,
                 "url": url
             })
-    
+    print(recall_data[0])
     return recall_data
 
 if __name__ == "__main__":

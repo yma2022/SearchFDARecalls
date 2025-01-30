@@ -1,6 +1,8 @@
 import os
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import DocArrayInMemorySearch
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
 from dotenv import load_dotenv
 from xml_parser import parse_xml_files
 
@@ -27,15 +29,14 @@ def create_documents_from_recall_data(recall_data):
             "date": entry["date"],
             "url": entry["url"]
         }
-        documents.append({"page_content": text, "metadata": metadata})
+        documents.append(Document(page_content=text, metadata=metadata))
     return documents
 
 def create_vector_store(documents, embeddings):
-    """Create an in-memory vector store using DocArrayInMemorySearch."""
-    return DocArrayInMemorySearch.from_texts(
-        [doc["page_content"] for doc in documents],
-        embeddings,
-        metadatas=[doc["metadata"] for doc in documents]
+    """Create an in-memory vector store with proper text splitting."""
+    return DocArrayInMemorySearch.from_documents(
+        documents=documents,
+        embedding=embeddings
     )
 
 def embed_database(data_path):
