@@ -11,26 +11,22 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 def create_documents_from_recall_data(recall_data):
     """
-    Convert recall data into LangChain documents for embedding.
+    Convert all recall data into a single LangChain document for embedding.
     """
-    documents = []
-    for entry in recall_data:
-        text = (
-            f"Brand: {entry['brand']}\n"
-            f"Company: {entry['company']}\n"
-            f"Date: {entry['date']}\n"
-            f"Product Description: {entry['product_description']}\n"
-            f"Reason: {entry['reason']}\n"
-            f"URL: {entry['url']}"
-        )
-        metadata = {
-            "brand": entry["brand"],
-            "company": entry["company"],
-            "date": entry["date"],
-            "url": entry["url"]
-        }
-        documents.append(Document(page_content=text, metadata=metadata))
-    return documents
+    text = "\n\n".join([
+        f"Brand: {entry['brand']}\n"
+        f"Company: {entry['company']}\n"
+        f"Date: {entry['date']}\n"
+        f"Product Description: {entry['product_description']}\n"
+        f"Reason: {entry['reason']}\n"
+        f"URL: {entry['url']}"
+        for entry in recall_data
+    ])
+    
+    metadata = {"source": "combined_data"}
+    
+    return [Document(page_content=text, metadata=metadata)]
+
 
 def create_vector_store(documents, embeddings):
     """Create an in-memory vector store with proper text splitting."""
